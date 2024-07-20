@@ -1,3 +1,8 @@
+<?php
+$uri = service('uri');
+$path = $uri->getPath();
+?>
+
 <nav class="sidenav shadow-right sidenav-light">
     <div class="sidenav-menu">
         <div class="nav accordion" id="accordionSidenav">
@@ -7,7 +12,7 @@
             <!-- Sidenav Menu Heading (Core)-->
             <div class="sidenav-menu-heading">Core</div>
             <!-- Sidenav Accordion (Dashboard)-->
-            <a class="nav-link collapsed" href="dashboard-2.html">
+            <a class="nav-link collapsed <?= $path == '/index.php/admin' ? 'active' : '' ?>" href="<?= base_url('admin/dashboard') ?>" aria-expanded="false" aria-controls="dashboard">
                 <div class="nav-link-icon"><i data-feather="activity"></i></div>
                 Dashboards
             </a>
