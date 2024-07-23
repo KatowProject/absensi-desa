@@ -8,10 +8,12 @@
     <meta name="description" content="Aplikasi Sistem Informasi Absensi Desa" />
     <meta name="author" content="KKN Periode 7 Karangmulya" />
     <title><?= $title ?? 'Sistem Informasi Absensi Desa' ?></title>
-    <link href="css/styles.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="assets/img/favicon.png" />
+    <link href="<?= base_url('css/styles.css') ?>" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/img/favicon.png') ?>" />
     <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js" crossorigin="anonymous"></script>
+
+    <?= $this->renderSection('head') ?>
 </head>
 
 <body class="nav-fixed">
@@ -23,9 +25,7 @@
         </div>
 
         <div id="layoutSidenav_content">
-            <main>
-                <?= $this->renderSection('content') ?>
-            </main>
+            <?= $this->renderSection('content') ?>
             <footer class="footer-admin mt-auto footer-light">
                 <div class="container-xl px-4">
                     <div class="row">
@@ -41,8 +41,11 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
+    <script src="<?= base_url('js/scripts.js') ?>"></script>
+
+    <?= $this->renderSection('script') ?>
 </body>
 
 </html>

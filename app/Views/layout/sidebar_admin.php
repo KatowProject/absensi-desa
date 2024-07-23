@@ -1,6 +1,9 @@
 <?php
 $uri = service('uri');
 $path = $uri->getPath();
+
+// remove index.php from path
+$path = str_replace('index.php/', '', $path);
 ?>
 
 <nav class="sidenav shadow-right sidenav-light">
@@ -12,23 +15,29 @@ $path = $uri->getPath();
             <!-- Sidenav Menu Heading (Core)-->
             <div class="sidenav-menu-heading">Core</div>
             <!-- Sidenav Accordion (Dashboard)-->
-            <a class="nav-link collapsed <?= $path == '/index.php/admin' ? 'active' : '' ?>" href="<?= base_url('admin/dashboard') ?>" aria-expanded="false" aria-controls="dashboard">
+            <a class="nav-link collapsed <?= $path == '/admin' ? 'active' : '' ?>" href="<?= base_url('admin') ?>" aria-expanded="false" aria-controls="dashboard">
                 <div class="nav-link-icon"><i data-feather="activity"></i></div>
                 Dashboards
             </a>
-            <a class="nav-link collapsed" href="dashboard-2.html">
+            <a class="nav-link collapsed <?= $path == '/admin/reports' ? 'active' : '' ?>" href="<?= base_url('admin/reports') ?>">
                 <div class="nav-link-icon"><i data-feather="archive"></i></div>
                 Reports
             </a>
             <!-- Sidenav Heading (Custom)-->
             <div class="sidenav-menu-heading">Database </div>
-            <a class="nav-link collapsed" href="dashboard-2.html">
+            <a class="nav-link collapsed <?= $path == '/admin/users' ? 'active' : '' ?>" href="<?= base_url('admin/users') ?>">
                 <div class="nav-link-icon"><i data-feather="users"></i></div>
-                Data Staff
+                Staff
             </a>
-            <a class="nav-link collapsed" href="dashboard-2.html">
+
+            <a class="nav-link collapsed <?= $path == '/admin/jabatan' ? 'active' : '' ?>" href="<?= base_url('admin/jabatan') ?>">
+                <div class="nav-link-icon"><i data-feather="pen-tool"></i></div>
+                Jabatan
+            </a>
+
+            <a class="nav-link collapsed <?= $path == '/admin/roles' ? 'active' : '' ?>" href="<?= base_url('admin/roles') ?>">
                 <div class="nav-link-icon"><i data-feather="users"></i></div>
-                Data Role
+                Role
             </a>
         </div>
     </div>
