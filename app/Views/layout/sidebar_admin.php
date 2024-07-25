@@ -21,7 +21,7 @@ $path = str_replace('index.php/', '', $path);
             </a>
             <a class="nav-link collapsed <?= $path == '/admin/reports' ? 'active' : '' ?>" href="<?= base_url('admin/reports') ?>">
                 <div class="nav-link-icon"><i data-feather="archive"></i></div>
-                Reports
+                Absensi
             </a>
             <!-- Sidenav Heading (Custom)-->
             <div class="sidenav-menu-heading">Database </div>

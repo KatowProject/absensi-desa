@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\Absensi;
 use App\Models\Jabatan;
 use App\Models\Role;
 use App\Models\User;
@@ -16,6 +17,75 @@ class Admin extends BaseController
     public function index()
     {
         return view('admin/dashboard');
+    }
+
+    public function reports()
+    {
+        $m_user = new User();
+        $m_absensi = new Absensi();
+
+        $users = $m_user->get_all();
+
+        $month = $this->request->getGet('bulan') ?? date('m');
+        $year =  $this->request->getGet('tahun') ?? date('Y');
+
+        $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+        $s = [];
+
+        foreach ($users as &$user) {
+            if ($user['role_id'] == 1)
+                continue;
+
+            $t = [];
+            for ($day = 1; $day <= $days; $day++) {
+
+                $currentDate = strtotime(date('Y-m-d'));
+                $checkDate = strtotime(sprintf('%s-%02d-%02d', $year, $month, $day));
+
+                // query sql
+                $_ = $m_absensi->db->query("
+                    SELECT * FROM absensi
+                    WHERE user_id = ? AND date = ?
+                ", [$user['id'], date('Y-m-d', $checkDate)])->getRowArray();
+
+                if ($_)
+                    $t[$day] = $_;
+                else {
+                    $dayOfWeek = date('N', $checkDate);
+                    if ($dayOfWeek == 6 || $dayOfWeek == 7) {
+                        $t[$day] = [
+                            'status' => 'Libur',
+                            'keterangan' => 'Hari libur akhir pekan',
+                        ];
+                    } else {
+                        if ($checkDate < $currentDate) {
+                            $t[$day] = [
+                                'status' => 'Alpa',
+                                'keterangan' => 'Tidak ada data',
+                            ];
+                        } else {
+                            $t[$day] = [
+                                'status' => 'Belum Terlaksana',
+                                'keterangan' => 'Tanggal belum melebihi sekarang',
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $s[] = $user;
+            $s[count($s) - 1]['attedance'] = $t;
+        }
+
+        $data = [
+            'users' => $s,
+            'month' => $month,
+            'year' => $year,
+            'days' => $days,
+        ];
+
+        return view('admin/reports', $data);
     }
 
     public function user()

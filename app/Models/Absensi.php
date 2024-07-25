@@ -4,21 +4,19 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class User extends Model
+class Absensi extends Model
 {
-    protected $table            = 'user';
+    protected $table            = 'absensi';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'role_id',
-        'name',
-        'email',
-        'password',
-        'jabatan_id',
-        'jenis_kelamin',
+        'user_id',
+        'status',
+        'keterangan',
+        'date',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -50,24 +48,4 @@ class User extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
-    public function get_all()
-    {
-        return $this
-            ->select('user.id, user.role_id, user.name, user.email, user.jenis_kelamin, role.name as role, jabatan.name as jabatan')
-            ->join('role', 'role.id = user.role_id')
-            ->join('jabatan', 'jabatan.id = user.jabatan_id')
-            ->orderBy('user.id', 'DESC')
-            ->findAll();
-    }
-
-    public function get_by_id($id)
-    {
-        return $this
-            ->select('user.*, role.name as role, jabatan.name as jabatan')
-            ->join('role', 'role.id = user.role_id')
-            ->join('jabatan', 'jabatan.id = user.jabatan_id')
-            ->where('user.id', $id)
-            ->first();
-    }
 }
