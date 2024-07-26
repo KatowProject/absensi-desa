@@ -9,9 +9,6 @@ $path = str_replace('index.php/', '', $path);
 <nav class="sidenav shadow-right sidenav-light">
     <div class="sidenav-menu">
         <div class="nav accordion" id="accordionSidenav">
-            <!-- Sidenav Menu Heading (Account)-->
-            <!-- * * Note: * * Visible only on and above the sm breakpoint-->
-            <div class="sidenav-menu-heading d-sm-none">Account</div>
             <!-- Sidenav Menu Heading (Core)-->
             <div class="sidenav-menu-heading">Core</div>
             <!-- Sidenav Accordion (Dashboard)-->

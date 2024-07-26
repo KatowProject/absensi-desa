@@ -8,8 +8,8 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Login - SB Admin Pro</title>
-    <link href="css/styles.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="assets/img/favicon.png" />
+    <link href="<?= base_url('css/styles.css') ?>" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/img/favicon.png') ?>" />
     <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js" crossorigin="anonymous"></script>
 </head>
@@ -19,7 +19,27 @@
         <div id="layoutAuthentication_content">
             <main>
                 <div class="container-xl px-4">
-                    <div class="row justify-content-center">
+                    <?php
+                    $msg = session()->getFlashdata('message');
+                    $err = session()->getFlashdata('error');
+                    ?>
+
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-lg-12 mt-2">
+                            <?php if ($msg) : ?>
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <?= $msg ?>
+                                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($err) : ?>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <?= $err ?>
+                                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                         <div class="col-lg-5">
                             <!-- Basic login form-->
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
@@ -32,12 +52,12 @@
                                         <!-- Form Group (email address)-->
                                         <div class="mb-3">
                                             <label class="small mb-1" for="inputEmailAddress">Email</label>
-                                            <input class="form-control" id="inputEmailAddress" type="email" placeholder="Enter email address" required />
+                                            <input class="form-control" id="inputEmailAddress" type="email" name="email" placeholder="Enter email address" required />
                                         </div>
                                         <!-- Form Group (password)-->
                                         <div class="mb-3">
                                             <label class="small mb-1" for="inputPassword">Password</label>
-                                            <input class="form-control" id="inputPassword" type="password" placeholder="Enter password" required />
+                                            <input class="form-control" id="inputPassword" type="password" name="password" placeholder="Enter password" required />
                                         </div>
                                         <!-- Form Group (login box)-->
                                         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
@@ -62,7 +82,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
+    <script src="<?= base_url('js/scripts.js') ?>"></script>
 </body>
 
 </html>

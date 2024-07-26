@@ -21,7 +21,11 @@
 
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
-            <?= $this->include('layout/sidebar_admin') ?>
+            <?php if (session()->get('role_id') == 1) : ?>
+                <?= $this->include('layout/sidebar_admin') ?>
+            <?php else : ?>
+                <?= $this->include('layout/sidebar_user') ?>
+            <?php endif ?>
         </div>
 
         <div id="layoutSidenav_content">
@@ -29,12 +33,7 @@
             <footer class="footer-admin mt-auto footer-light">
                 <div class="container-xl px-4">
                     <div class="row">
-                        <div class="col-md-6 small">Copyright &copy; Your Website 2021</div>
-                        <div class="col-md-6 text-md-end small">
-                            <a href="#!">Privacy Policy</a>
-                            &middot;
-                            <a href="#!">Terms &amp; Conditions</a>
-                        </div>
+                        <div class="col-md-6 small">Copyright &copy; KatowProject <?= date('Y') ?></div>
                     </div>
                 </div>
             </footer>

@@ -7,11 +7,18 @@ setlocale(LC_TIME, 'id_ID.utf8');
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+// $routes->get('/', 'Home::index');
 // $routes->get('admin', 'Admin::index');
-
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::login_process');
+
+/**
+ * @param RouteCollection $routes
+ */
+$routes->group('', function ($routes) {
+    $routes->get('/', 'Main::index');
+    $routes->get('absensi', 'Main::absensi');
+});
 
 /**
  * @param RouteCollection $routes
