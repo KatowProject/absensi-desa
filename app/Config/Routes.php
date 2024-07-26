@@ -18,6 +18,7 @@ $routes->post('login', 'Auth::login_process');
 $routes->group('', function ($routes) {
     $routes->get('/', 'Main::index');
     $routes->get('absensi', 'Main::absensi');
+    $routes->get('attendance', 'Main::attedance');
 });
 
 /**

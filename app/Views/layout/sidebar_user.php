@@ -16,9 +16,9 @@ $path = str_replace('index.php/', '', $path);
                 <div class="nav-link-icon"><i data-feather="activity"></i></div>
                 Dashboards
             </a>
-            <a class="nav-link collapsed <?= $path == '/absensi' ? 'active' : '' ?>" href="<?= base_url('absensi') ?>" aria-expanded="false" aria-controls="dashboard">
-                <div class="nav-link-icon"><i data-feather="archive"></i></div>
-                Absensi
+            <a class="nav-link collapsed <?= $path == '/attendance' ? 'active' : '' ?>" href="<?= base_url('attendance') ?>" aria-expanded="false" aria-controls="attedance">
+                <div class="nav-link-icon"><i data-feather="bell"></i></div>
+                Attendance
             </a>
         </div>
     </div>

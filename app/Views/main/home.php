@@ -72,10 +72,10 @@
             initialView: 'dayGridMonth',
             firstDay: 1,
             datesSet: async function(info) {
-                console.log(info);
-                const date = info.startStr.split('T')[0];
+                const start = info.startStr.split('T')[0];
+                const end = info.endStr.split('T')[0];
 
-                const absensi = await getAbsensi(date);
+                const absensi = await getAbsensi(start, end);
 
                 // change color per day from absensi
                 absensi.forEach(absen => {
@@ -83,6 +83,7 @@
                     const status = absen.status;
 
                     const el = document.querySelector(`.fc-day[data-date="${date}"]`);
+                    if (!el) return;
 
                     if (status == 'Hadir') {
                         el.style.backgroundColor = 'green';
@@ -102,10 +103,10 @@
     });
 
 
-    async function getAbsensi(date) {
+    async function getAbsensi(start, end) {
         const res = await $.ajax({
             method: 'GET',
-            url: `<?= base_url('absensi') ?>?date=${date}&json=true`,
+            url: `<?= base_url('absensi') ?>?start=${start}&end=${end}&json=true`,
             dataType: 'json'
         });
 
