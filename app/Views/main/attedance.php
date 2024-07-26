@@ -19,57 +19,84 @@
 
     <!-- Main page content-->
     <div class="container-xl px-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="row justify-content-center" style="height: 200px;">
-                    <?php if ($absensi) : ?>
-                        <div class="col-12">
-                            <div class="alert alert-success" role="alert">
-                                Anda sudah melakukan absensi hari ini
-                            </div>
-                        </div>
-                    <?php else : ?>
-                        <div class="col-12">
-                            <h5 class="text-center">Date:
-                                <b><?= date('d F Y') ?></b>
-                            </h5>
-                        </div>
+        <?php
+        $success = session()->getFlashdata('success');
+        $err = session()->getFlashdata('error');
+        ?>
+        <div class="row">
+            <div class="col-lg-12 mt-2">
+                <?php if ($success) : ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= $success ?>
+                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
 
-                        <div class="col-12 d-flex justify-content-center align-items-center">
-                            <!-- radio hadir, izin, sakit -->
-                            <div class="row justify-content-center text-center">
-                                <div class="col-12 col-md-12">
-                                    <div class="form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="hadir" value="1" checked>
-                                        <label class="form-check-label" for="hadir">Hadir</label>
+                <?php if ($err) : ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= $err ?>
+                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row justify-content-center" style="height: auto;">
+                            <?php if ($absensi) : ?>
+                                <div class="col-12">
+                                    <div class="alert alert-success" role="alert">
+                                        Anda sudah melakukan absensi hari ini
                                     </div>
 
-                                    <div class="form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="izin" value="2">
-                                        <label class="form-check-label" for="izin">Izin</label>
-                                    </div>
-
-                                    <div class="form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="sakit" value="3">
-                                        <label class="form-check-label" for="sakit">Sakit</label>
-                                    </div>
-                                </div>
-
-
-                                <div class="row justify-content-center text-center mt-3" id="reason-container" style="display: none;">
-                                    <div class="col-12 col-md-6">
-                                        <input type="text" class="form-control" id="reason" name="reason" placeholder="Masukkan alasan">
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                                        <img class="text-center" height="100px" src="<?= base_url('assets/img/thumbsup.png') ?>">
                                     </div>
                                 </div>
-
-
-                                <div class="col-12 mt-5">
-                                    <button class="btn btn-primary" id="absen">Absen</button>
+                            <?php else : ?>
+                                <div class="col-12">
+                                    <h5 class="text-center">Date:
+                                        <b><?= date('d F Y') ?></b>
+                                    </h5>
                                 </div>
-                            </div>
 
-                        <?php endif ?>
+                                <div class="col-12 d-flex justify-content-center align-items-center" style="height: 100px;">
+                                    <!-- radio hadir, izin, sakit -->
+                                    <div class="row justify-content-center text-center">
+                                        <div class="col-12 col-md-12">
+                                            <div class="form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="hadir" value="1" checked>
+                                                <label class="form-check-label" for="hadir">Hadir</label>
+                                            </div>
+
+                                            <div class="form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="izin" value="2">
+                                                <label class="form-check-label" for="izin">Izin</label>
+                                            </div>
+
+                                            <div class="form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="sakit" value="3">
+                                                <label class="form-check-label" for="sakit">Sakit</label>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row justify-content-center text-center mt-3" id="reason-container" style="display: none;">
+                                            <div class="col-12 col-md-6">
+                                                <input type="text" class="form-control" id="reason" name="reason" placeholder="Masukkan alasan">
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-primary" id="absen">Submit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif ?>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,6 +114,33 @@
             } else {
                 $('#reason-container').hide();
             }
+        });
+
+        $('#absen').on('click', function() {
+            let status = $('input[type=radio][name=status]:checked').val();
+            let reason = $('#reason').val();
+
+            // create fake form
+            let form = $('<form>', {
+                'action': '<?= base_url('attendance') ?>',
+                'method': 'POST'
+            }).append(
+                $('<input>', {
+                    'name': 'status',
+                    'value': status,
+                    'type': 'hidden'
+                }),
+                $('<input>', {
+                    'name': 'reason',
+                    'value': reason,
+                    'type': 'hidden'
+                })
+            );
+
+            // submit form
+            $('body').append(form);
+
+            form.submit();
         });
     });
 </script>

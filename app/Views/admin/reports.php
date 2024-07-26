@@ -82,10 +82,10 @@
                         <div class="mb-3">
                             <!-- export button -->
                             <div class="btn-group">
-                                <button class="btn btn-success">
+                                <a class="btn btn-success" href="<?= base_url('admin/reports/export') ?>?tahun=<?= $year ?>&bulan=<?= $month ?>" target="_blank">
                                     <div class="page-header-icon me-2"><i data-feather="file-text"></i></div>
                                     Export
-                                </button>
+                                </a>
                             </div>
                         </div>
                         <table id="data" class="table table-bordered table-striped text-center">
@@ -128,7 +128,7 @@
                                                     <span class="badge bg-danger"><?= $a['status'] ?></span>
                                                 <?php elseif ($a['status'] == 'Hadir') : ?>
                                                     <span class="badge bg-success"><?= $a['status'] ?></span>
-                                                    <?= $a['created_at'] ?>
+                                                    <?= date('d F Y', strtotime($a['created_at'])) ?>
                                                 <?php elseif ($a['status'] == 'Libur') : ?>
                                                     -
                                                 <?php elseif ($a['status'] == 'Belum Terlaksana') : ?>

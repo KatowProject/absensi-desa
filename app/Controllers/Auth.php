@@ -20,6 +20,8 @@ class Auth extends BaseController
         $email = $this->request->getPost('email');
         $pass = $this->request->getPost('password') ?? '';
 
+        $redirect = $this->request->getGet('redirect') ?? '/';
+
         $user = $m_user->where('email', $email)->first();
 
         if (!$user) {
@@ -34,6 +36,12 @@ class Auth extends BaseController
         session()->set('role_id', $user['role_id']);
         session()->set('name', $user['name']);
 
-        return redirect()->to('/');
+        return redirect()->to($redirect);
+    }
+
+    public function logout()
+    {
+        session()->destroy();
+        return redirect()->to('/login');
     }
 }

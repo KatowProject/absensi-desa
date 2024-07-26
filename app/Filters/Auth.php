@@ -25,7 +25,39 @@ class Auth implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        //
+        $path = $request->getUri()->getPath();
+
+        // remove index.php t=x
+        $path = str_replace('/index.php', '', $path);
+
+        $session = session();
+
+        $id = $session->get('id');
+        $role = $session->get('role_id');
+
+        if (!$id) {
+            if ($path == '/login') {
+                return;
+            }
+
+            return redirect()->to('/login?redirect=' . urlencode(current_url()));
+        }
+
+        if ($path == '/login') {
+            if ($role == 1) return redirect()->to('/admin');
+            if ($role == 2) return redirect()->to('/');
+        }
+
+
+        if ($role == 1) {
+            if (strpos($path, '/admin') === false) {
+                return redirect()->to('/admin');
+            }
+        } else if ($role == 2) {
+            if (strpos($path, '/admin') !== false) {
+                return redirect()->to('/');
+            }
+        }
     }
 
     /**

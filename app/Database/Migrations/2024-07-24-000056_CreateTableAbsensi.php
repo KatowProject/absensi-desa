@@ -34,6 +34,9 @@ class CreateTableAbsensi extends Migration
                 'type' => 'DATE',
                 'default' => new RawSql('CURRENT_TIMESTAMP'),
             ],
+            'time' => [
+                'type' => 'TIME',
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'default' => new RawSql('CURRENT_TIMESTAMP'),

@@ -17,6 +17,7 @@ class Absensi extends Model
         'status',
         'keterangan',
         'date',
+        'time',
     ];
 
     protected bool $allowEmptyInserts = false;

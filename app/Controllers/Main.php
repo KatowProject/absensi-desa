@@ -151,4 +151,45 @@ class Main extends BaseController
             'absensi' => $absensi,
         ]);
     }
+
+    public function submit_attedance()
+    {
+        $m_absensi = new Absensi();
+
+        $date = date('Y-m-d');
+        $id = session()->get('id');
+
+        $absensi = $m_absensi->where('date', $date)->where('user_id', $id)->first();
+
+        if ($absensi) {
+            return redirect()->to('/attedance')->with('error', 'Anda sudah melakukan absensi hari ini');
+        }
+
+        $status = $this->request->getPost('status');
+        $keterangan = $this->request->getPost('reason');
+
+        // if status hadir set default keterangan "Sudah Melakukan Absensi"
+        if ($status == 1) {
+            $status = 'Hadir';
+            $keterangan = 'Sudah Melakukan Absensi';
+        } else if ($status == 2) {
+            $status = 'Izin';
+        } else if ($status == 3) {
+            $status = 'Sakit';
+        }
+
+        date_default_timezone_set('Asia/Jakarta');
+
+        $data = [
+            'user_id' => $id,
+            'date' => $date,
+            'status' => $status,
+            'keterangan' => $keterangan,
+            'time' => date('H:i:s'),
+        ];
+
+        $m_absensi->insert($data);
+
+        return redirect()->to('/attendance')->with('success', 'Absensi berhasil');
+    }
 }
