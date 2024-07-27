@@ -16,11 +16,23 @@ class Admin extends BaseController
 {
     use ResponseTrait;
 
+    protected $helpers = ['date_helper'];
+
     public $char = [
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ',
         'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BK', 'BL', 'BM', 'BN', 'BO', 'BP', 'BQ', 'BR', 'BS', 'BT', 'BU', 'BV', 'BW', 'BX', 'BY', 'BZ',
         'CA', 'CB', 'CC', 'CD', 'CE', 'CF', 'CG', 'CH', 'CI', 'CJ', 'CK', 'CL', 'CM', 'CN', 'CO', 'CP', 'CQ', 'CR', 'CS', 'CT', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ',
+    ];
+
+    public $dayName = [
+        "Monday" => "Senin",
+        "Tuesday" => "Selasa",
+        "Wednesday" => "Rabu",
+        "Thursday" => "Kamis",
+        "Friday" => "Jum'at",
+        "Saturday" => "Sabtu",
+        "Sunday" => "Minggu"
     ];
 
     public function index()
@@ -99,6 +111,8 @@ class Admin extends BaseController
 
     public function export_reports()
     {
+        ini_set('memory_limit', '1024M');
+
         $m_user = new User();
         $m_absensi = new Absensi();
 
@@ -108,7 +122,8 @@ class Admin extends BaseController
         $year =  $this->request->getGet('tahun') ?? date('Y');
 
         $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-
+        $weeks = get_weeks_in_month($month, $year);
+        
         $s = [];
 
         foreach ($users as &$user) {
@@ -117,7 +132,6 @@ class Admin extends BaseController
 
             $t = [];
             for ($day = 1; $day <= $days; $day++) {
-
                 $currentDate = strtotime(date('Y-m-d'));
                 $checkDate = strtotime(sprintf('%s-%02d-%02d', $year, $month, $day));
 
@@ -127,9 +141,9 @@ class Admin extends BaseController
                     WHERE user_id = ? AND date = ?
                 ", [$user['id'], date('Y-m-d', $checkDate)])->getRowArray();
 
-                if ($_)
+                if ($_) {
                     $t[$day] = $_;
-                else {
+                } else {
                     $dayOfWeek = date('N', $checkDate);
                     if ($dayOfWeek == 6 || $dayOfWeek == 7) {
                         $t[$day] = [
@@ -170,72 +184,163 @@ class Admin extends BaseController
 
         $worksheet->getStyle('D1:' . $this->char[$days + 2] . '2')->getBorders()->getAllBorders()->setBorderStyle('thin');
 
+        // bold
+        $worksheet->getStyle('D1')->getFont()->setBold(true)->setSize(16);
+
+        $i = 0;
         for ($day = 1; $day <= $days; $day++) {
             $dayOfWeek = date('N', strtotime(sprintf('%s-%02d-%02d', $year, $month, $day)));
             if ($dayOfWeek == 6 || $dayOfWeek == 7) {
+                continue;
                 $w = $worksheet
-                    ->setCellValue($this->char[$day + 2] . '2', $day)
-                    ->getStyle($this->char[$day + 2] . '2');
+                    ->setCellValue($this->char[$i + 2] . '2', $day)
+                    ->getStyle($this->char[$i + 2] . '2');
 
                 $w->getAlignment()->setHorizontal('center');
                 // color like this #da7f7f
                 $w->getFill()->setFillType('solid')->getStartColor()->setRGB('da7f7f');
+
+                // bold
+                $w->getFont()->setBold(true);
             } else {
-                $w = $worksheet->setCellValue($this->char[$day + 2] . '2', $day);
-                $w->getStyle($this->char[$day + 2] . '2')->getAlignment()->setHorizontal('center');
+                $w = $worksheet->setCellValue($this->char[$i + 2] . '2', $day);
+                $w->getStyle($this->char[$i + 2] . '2')->getAlignment()->setHorizontal('center');
+
+                // bold
+                $w->getStyle($this->char[$i + 2] . '2')->getFont()->setBold(true);
             }
+
+            $i++;
         }
 
-        for ($i = 0; $i < count($s); $i++) {
-            $worksheet
-                ->setCellValue('A' . ($i + 3), $i + 1)
-                ->getStyle('A' . ($i + 3))->getAlignment()->setHorizontal('center');
-            $worksheet
-                ->getStyle('A' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+        foreach ($weeks as $week) {
+            if (count($week['days']) == 0) continue;
 
-            $worksheet
-                ->setCellValue('B' . ($i + 3), $s[$i]['name'])
-                ->getStyle('B' . ($i + 3))->getAlignment()->setHorizontal('center');
-            $worksheet
-                ->getStyle('B' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+            // create new sheet
+            $newSheet = $spreadsheet->createSheet();
 
-            $worksheet
-                ->setCellValue('C' . ($i + 3), $s[$i]['jabatan'])
-                ->getStyle('C' . ($i + 3))->getAlignment()->setHorizontal('center');
-            $worksheet
-                ->getStyle('C' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+            $newSheet->setTitle('Minggu ' . $week['week']);
 
+            // no (merge A1 - A2)
+            $newSheet->mergeCells('A1:A2');
+            $newSheet
+                ->setCellValue('A1', 'No')
+                ->getStyle('A1')->getAlignment()->setHorizontal('center');
+            // middle center
+            $newSheet->getStyle('A1:A2')->getAlignment()->setVertical('center');
+            // border
+            $newSheet->getStyle('A1:A2')->getBorders()->getAllBorders()->setBorderStyle('thin');
 
-            for ($day = 1; $day <= $days; $day++) {
-                $status = $s[$i]['attedance'][$day]['status'];
+            // adjust width
+            $newSheet->getColumnDimension('A')->setAutoSize(true);
 
-                $cell = $this->char[$day + 2] . ($i + 3);
+            // name (merge B1 - B2)
+            $newSheet->mergeCells('B1:B2');
+            $newSheet
+                ->setCellValue('B1', 'Name')
+                ->getStyle('B1')->getAlignment()->setHorizontal('center');
+            $newSheet->getStyle('B1:B2')->getAlignment()->setVertical('center');
+            //border
+            $newSheet->getStyle('B1:B2')->getBorders()->getAllBorders()->setBorderStyle('thin');
 
-                if ($status == 'Alpa') {
-                    $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
-                } else if ($status == 'Hadir') {
-                    $worksheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$day]['time'])));
-                    // green, text white
-                    $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
-                    $worksheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
-                    $worksheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
-                } else if ($status == 'Libur') {
-                    $worksheet->setCellValue($cell, '-');
-                } else if ($status == 'Belum Terlaksana') {
-                    $worksheet->setCellValue($cell, '-');
-                }
+            // adjust width
+            $newSheet->getColumnDimension('B')->setAutoSize(true);
 
-                $worksheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-                $worksheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle('thin');
+            // jabatan
+            $newSheet->mergeCells('C1:C2');
+            $newSheet
+                ->setCellValue('C1', 'Jabatan')
+                ->getStyle('C1')->getAlignment()->setHorizontal('center');
+            $newSheet->getStyle('C1:C2')->getAlignment()->setVertical('center');
+            //border
+            $newSheet->getStyle('C1:C2')->getBorders()->getAllBorders()->setBorderStyle('thin');
+            // adjust width
+            $newSheet->getColumnDimension('C')->setAutoSize(true);
+
+            // sama seperti sebelumnya, akan tetapi hanya minggu ini saja
+            $newSheet->mergeCells('D1:' . $this->char[count($week['days']) + 2] . '1');
+
+            $newSheet
+                ->setCellValue('D1', 'Hari/Tanggal')
+                ->getStyle('D1')->getAlignment()->setHorizontal('center');
+
+            $newSheet->getStyle('D1:' . $this->char[count($week['days']) + 2] . '2')->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+            foreach ($week['days'] as $i => $day) {
+                $d = date('d', strtotime($day['date']));
+                $w = $newSheet->setCellValue($this->char[$i + 3] . '2', $d . "\n" . $this->dayName[$day['day_name']]);
+
+                // adjust height
+                $newSheet->getRowDimension('2')->setRowHeight(40);
+
+                // wrap text
+                $w->getStyle($this->char[$i + 3] . '2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
             }
+
+            // for ($i = 0; $i < count($s); $i++) {
+            //     $newSheet
+            //         ->setCellValue('A' . ($i + 3), $i + 1)
+            //         ->getStyle('A' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
+            //     $newSheet
+            //         ->getStyle('A' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+            //     $newSheet
+            //         ->getStyle('A' . ($i + 3))->getFill()->setFillType('solid')->getStartColor()->setRGB('94DCF8');
+
+            //     $newSheet
+            //         ->setCellValue('B' . ($i + 3), $s[$i]['name'])
+            //         ->getStyle('B' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
+            //     $newSheet
+            //         ->getStyle('B' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+            //     $newSheet
+            //         ->setCellValue('C' . ($i + 3), $s[$i]['jabatan'])
+            //         ->getStyle('C' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
+            //     $newSheet
+            //         ->getStyle('C' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+            //     for ($day = 1; $day <= count($week['days']); $day++) {
+            //         $d = $week['days'][$day - 1]['day'];
+
+            //         $status = $s[$i]['attedance'][$d]['status'];
+            //         // if ($i == 1) {
+            //         //     dd($status);
+            //         // }
+
+            //         $cell = $this->char[$day + 2] . ($i + 3);
+
+            //         if ($status == 'Alpa') {
+            //             $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
+            //         } else if ($status == 'Hadir') {
+            //             $newSheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$d]['time'])));
+            //             $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
+            //             $newSheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
+            //             $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
+            //         } else if ($status == 'Libur') {
+            //             $newSheet->setCellValue($cell, '-');
+            //         } else if ($status == 'Belum Terlaksana') {
+            //             $newSheet->setCellValue($cell, '-');
+            //         }
+
+            //         $newSheet->getStyle($cell)->getAlignment()->setHorizontal('center');
+            //         $newSheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+            //         // wrap text
+            //         $newSheet->getStyle($cell)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+
+            //         // adjust height
+            //         $newSheet->getRowDimension($i + 3)->setRowHeight(30);
+
+            //         // adjust width
+            //         $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
+            //     }
+            // }
         }
 
-
-        //    export to xlsx
+        // export to xlsx
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Absensi-' . date('F-Y') . '.xlsx"');
+        header('Content-Disposition: attachment;filename="Absensi-' . date('F-Y', strtotime(sprintf('%s-%02d-01', $year, $month))) . '.xlsx"');
 
         $writer->save('php://output');
 
