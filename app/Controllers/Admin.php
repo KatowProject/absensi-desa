@@ -255,7 +255,8 @@ class Admin extends BaseController
                 $cell = $this->char[$day + 2] . ($i + 3);
 
                 if ($status == 'Alpa') {
-                    $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
+                    // $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
+                    $worksheet->setCellValue($cell, '-');
                 } else if ($status == 'Hadir') {
                     $worksheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$day]['time'])));
                     // green, text white
