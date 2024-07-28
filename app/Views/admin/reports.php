@@ -133,6 +133,9 @@
                                                     -
                                                 <?php elseif ($a['status'] == 'Belum Terlaksana') : ?>
                                                     -
+                                                <?php elseif ($a['status'] == 'Izin') : ?>
+                                                    <span class="badge bg-warning"><?= $a['status'] ?></span>
+                                                    <?= date('H:m', strtotime($a['time'])) ?>
                                                 <?php endif ?>
                                             </td>
                                         <?php endforeach ?>

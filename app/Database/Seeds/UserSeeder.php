@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             $data = [
                 'role_id' => 2,
                 'name' => $faker->name,
-                'email' => $faker->email,
+                'email' => "user$i@localhost",
                 'jabatan_id' => $faker->randomElement($jabatans)['id'],
                 'password' => password_hash('password', PASSWORD_DEFAULT),
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
