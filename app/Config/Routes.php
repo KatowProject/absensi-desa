@@ -8,13 +8,13 @@ setlocale(LC_TIME, 'id_ID.utf8');
  * @var RouteCollection $routes
  */
 
+$routes->get('logout', 'Auth::logout');
 /**
  * @param RouteCollection $routes
  */
 $routes->group('', ['filter' => 'auth'],  function ($routes) {
     $routes->get('login', 'Auth::login');
     $routes->post('login', 'Auth::login_process');
-    $routes->get('logout', 'Auth::logout');
     
     $routes->get('/', 'Main::index');
     $routes->get('absensi', 'Main::absensi');
