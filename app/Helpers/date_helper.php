@@ -45,6 +45,6 @@ if (!function_exists('get_weekend_in_month')) {
             }
         }
 
-        return $weekends;
+        return count($weekends);
     }
 }

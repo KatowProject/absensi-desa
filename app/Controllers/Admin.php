@@ -123,6 +123,7 @@ class Admin extends BaseController
 
         $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         $weeks = get_weeks_in_month($month, $year);
+        $weekend_count = get_weekend_in_month($month, $year);
         
         $s = [];
 
@@ -175,14 +176,14 @@ class Admin extends BaseController
         $worksheet = $spreadsheet->getActiveSheet();
 
         // merge cell from C to length of days
-        $worksheet->mergeCells('D1:' . $this->char[$days + 2] . '1');
+        $worksheet->mergeCells('D1:' . $this->char[($days - $weekend_count) + 1] . '1');
 
         // set teks from merge cell
         $worksheet
             ->setCellValue('D1', 'Laporan Absensi ' . date('F Y', strtotime(sprintf('%s-%02d-01', $year, $month))))
             ->getStyle('D1')->getAlignment()->setHorizontal('center');
 
-        $worksheet->getStyle('D1:' . $this->char[$days + 2] . '2')->getBorders()->getAllBorders()->setBorderStyle('thin');
+        $worksheet->getStyle('D1:' . $this->char[($days - $weekend_count) + 1] . '2')->getBorders()->getAllBorders()->setBorderStyle('thin');
 
         // bold
         $worksheet->getStyle('D1')->getFont()->setBold(true)->setSize(16);
@@ -277,63 +278,63 @@ class Admin extends BaseController
                 $w->getStyle($this->char[$i + 3] . '2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
             }
 
-            // for ($i = 0; $i < count($s); $i++) {
-            //     $newSheet
-            //         ->setCellValue('A' . ($i + 3), $i + 1)
-            //         ->getStyle('A' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
-            //     $newSheet
-            //         ->getStyle('A' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
-            //     $newSheet
-            //         ->getStyle('A' . ($i + 3))->getFill()->setFillType('solid')->getStartColor()->setRGB('94DCF8');
+            for ($i = 0; $i < count($s); $i++) {
+                $newSheet
+                    ->setCellValue('A' . ($i + 3), $i + 1)
+                    ->getStyle('A' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
+                $newSheet
+                    ->getStyle('A' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+                $newSheet
+                    ->getStyle('A' . ($i + 3))->getFill()->setFillType('solid')->getStartColor()->setRGB('94DCF8');
 
-            //     $newSheet
-            //         ->setCellValue('B' . ($i + 3), $s[$i]['name'])
-            //         ->getStyle('B' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
-            //     $newSheet
-            //         ->getStyle('B' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+                $newSheet
+                    ->setCellValue('B' . ($i + 3), $s[$i]['name'])
+                    ->getStyle('B' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
+                $newSheet
+                    ->getStyle('B' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
 
-            //     $newSheet
-            //         ->setCellValue('C' . ($i + 3), $s[$i]['jabatan'])
-            //         ->getStyle('C' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
-            //     $newSheet
-            //         ->getStyle('C' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+                $newSheet
+                    ->setCellValue('C' . ($i + 3), $s[$i]['jabatan'])
+                    ->getStyle('C' . ($i + 3))->getAlignment()->setHorizontal('center')->setVertical('center');
+                $newSheet
+                    ->getStyle('C' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
 
-            //     for ($day = 1; $day <= count($week['days']); $day++) {
-            //         $d = $week['days'][$day - 1]['day'];
+                for ($day = 1; $day <= count($week['days']); $day++) {
+                    $d = $week['days'][$day - 1]['day'];
 
-            //         $status = $s[$i]['attedance'][$d]['status'];
-            //         // if ($i == 1) {
-            //         //     dd($status);
-            //         // }
+                    $status = $s[$i]['attedance'][$d]['status'];
+                    // if ($i == 1) {
+                    //     dd($status);
+                    // }
 
-            //         $cell = $this->char[$day + 2] . ($i + 3);
+                    $cell = $this->char[$day + 2] . ($i + 3);
 
-            //         if ($status == 'Alpa') {
-            //             $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
-            //         } else if ($status == 'Hadir') {
-            //             $newSheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$d]['time'])));
-            //             $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
-            //             $newSheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
-            //             $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
-            //         } else if ($status == 'Libur') {
-            //             $newSheet->setCellValue($cell, '-');
-            //         } else if ($status == 'Belum Terlaksana') {
-            //             $newSheet->setCellValue($cell, '-');
-            //         }
+                    if ($status == 'Alpa') {
+                        $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
+                    } else if ($status == 'Hadir') {
+                        $newSheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$d]['time'])));
+                        $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
+                        $newSheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
+                        $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
+                    } else if ($status == 'Libur') {
+                        $newSheet->setCellValue($cell, '-');
+                    } else if ($status == 'Belum Terlaksana') {
+                        $newSheet->setCellValue($cell, '-');
+                    }
 
-            //         $newSheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-            //         $newSheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle('thin');
+                    $newSheet->getStyle($cell)->getAlignment()->setHorizontal('center');
+                    $newSheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle('thin');
 
-            //         // wrap text
-            //         $newSheet->getStyle($cell)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+                    // wrap text
+                    $newSheet->getStyle($cell)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
 
-            //         // adjust height
-            //         $newSheet->getRowDimension($i + 3)->setRowHeight(30);
+                    // adjust height
+                    $newSheet->getRowDimension($i + 3)->setRowHeight(30);
 
-            //         // adjust width
-            //         $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
-            //     }
-            // }
+                    // adjust width
+                    $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
+                }
+            }
         }
 
         // export to xlsx

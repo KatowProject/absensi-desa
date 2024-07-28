@@ -55,15 +55,14 @@
                                     </div>
                                 </div>
                             <?php else : ?>
-                                <div class="col-12">
-                                    <h5 class="text-center">Date:
-                                        <b><?= date('d F Y') ?></b>
-                                    </h5>
-                                </div>
-
-                                <div class="col-12 d-flex justify-content-center align-items-center" style="height: 100px;">
+                                <div class="col-12 d-flex justify-content-center" style="min-height: 300px;">
                                     <!-- radio hadir, izin, sakit -->
                                     <div class="row justify-content-center text-center">
+                                        <div class="col-12 col-md-12 mb-5">
+                                            <h5 class="text-center">Date:
+                                                <b><?= date('d F Y') ?></b>
+                                            </h5>
+                                        </div>
                                         <div class="col-12 col-md-12">
                                             <div class="form-check-inline">
                                                 <input class="form-check-input" type="radio" name="status" id="hadir" value="1" checked>
