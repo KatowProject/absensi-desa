@@ -35,6 +35,21 @@ class Admin extends BaseController
         "Sunday" => "Minggu"
     ];
 
+    public $monthName = [
+        1 => "Januari",
+        2 => "Februari",
+        3 => "Maret",
+        4 => "April",
+        5 => "Mei",
+        6 => "Juni",
+        7 => "Juli",
+        8 => "Agustus",
+        9 => "September",
+        10 => "Oktober",
+        11 => "November",
+        12 => "Desember",
+    ];
+
     public function index()
     {
         return view('admin/dashboard');
@@ -176,14 +191,15 @@ class Admin extends BaseController
         $worksheet = $spreadsheet->getActiveSheet();
 
         // merge cell from C to length of days
-        $worksheet->mergeCells('D1:' . $this->char[($days - $weekend_count) + 1] . '1');
+        // $worksheet->mergeCells('D1:' . $this->char[($days - $weekend_count) + 1] . '1');
+        $worksheet->mergeCells('D1:' . $this->char[$days + 2] . '1');
 
         // set teks from merge cell
         $worksheet
-            ->setCellValue('D1', 'Laporan Absensi ' . date('F Y', strtotime(sprintf('%s-%02d-01', $year, $month))))
+        ->setCellValue('D1', 'Laporan Absensi ' . $this->monthName[(int) $month] . ' ' . $year)
             ->getStyle('D1')->getAlignment()->setHorizontal('center');
 
-        $worksheet->getStyle('D1:' . $this->char[($days - $weekend_count) + 1] . '2')->getBorders()->getAllBorders()->setBorderStyle('thin');
+        $worksheet->getStyle('D1:' . $this->char[$days + 2] . '2')->getBorders()->getAllBorders()->setBorderStyle('thin');
 
         // bold
         $worksheet->getStyle('D1')->getFont()->setBold(true)->setSize(16);
@@ -192,10 +208,9 @@ class Admin extends BaseController
         for ($day = 1; $day <= $days; $day++) {
             $dayOfWeek = date('N', strtotime(sprintf('%s-%02d-%02d', $year, $month, $day)));
             if ($dayOfWeek == 6 || $dayOfWeek == 7) {
-                continue;
                 $w = $worksheet
-                    ->setCellValue($this->char[$i + 2] . '2', $day)
-                    ->getStyle($this->char[$i + 2] . '2');
+                    ->setCellValue($this->char[$day + 2] . '2', $day)
+                    ->getStyle($this->char[$day + 2] . '2');
 
                 $w->getAlignment()->setHorizontal('center');
                 // color like this #da7f7f
@@ -204,14 +219,58 @@ class Admin extends BaseController
                 // bold
                 $w->getFont()->setBold(true);
             } else {
-                $w = $worksheet->setCellValue($this->char[$i + 2] . '2', $day);
-                $w->getStyle($this->char[$i + 2] . '2')->getAlignment()->setHorizontal('center');
+                $w = $worksheet->setCellValue($this->char[$day + 2] . '2', $day);
+                $w->getStyle($this->char[$day + 2] . '2')->getAlignment()->setHorizontal('center');
 
                 // bold
-                $w->getStyle($this->char[$i + 2] . '2')->getFont()->setBold(true);
+                $w->getStyle($this->char[$day + 2] . '2')->getFont()->setBold(true);
             }
 
             $i++;
+        }
+
+        for ($i = 0; $i < count($s); $i++) {
+            $worksheet
+                ->setCellValue('A' . ($i + 3), $i + 1)
+                ->getStyle('A' . ($i + 3))->getAlignment()->setHorizontal('center');
+            $worksheet
+                ->getStyle('A' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+            $worksheet
+                ->setCellValue('B' . ($i + 3), $s[$i]['name'])
+                ->getStyle('B' . ($i + 3))->getAlignment()->setHorizontal('center');
+            $worksheet
+                ->getStyle('B' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+            $worksheet
+                ->setCellValue('C' . ($i + 3), $s[$i]['jabatan'])
+                ->getStyle('C' . ($i + 3))->getAlignment()->setHorizontal('center');
+            $worksheet
+                ->getStyle('C' . ($i + 3))->getBorders()->getAllBorders()->setBorderStyle('thin');
+
+
+            for ($day = 1; $day <= $days; $day++) {
+                $status = $s[$i]['attedance'][$day]['status'];
+
+                $cell = $this->char[$day + 2] . ($i + 3);
+
+                if ($status == 'Alpa') {
+                    $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
+                } else if ($status == 'Hadir') {
+                    $worksheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$day]['time'])));
+                    // green, text white
+                    $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
+                    $worksheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
+                    $worksheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
+                } else if ($status == 'Libur') {
+                    $worksheet->setCellValue($cell, '-');
+                } else if ($status == 'Belum Terlaksana') {
+                    $worksheet->setCellValue($cell, '-');
+                }
+
+                $worksheet->getStyle($cell)->getAlignment()->setHorizontal('center');
+                $worksheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle('thin');
+            }
         }
 
         foreach ($weeks as $week) {

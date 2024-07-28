@@ -128,7 +128,7 @@
                                                     <span class="badge bg-danger"><?= $a['status'] ?></span>
                                                 <?php elseif ($a['status'] == 'Hadir') : ?>
                                                     <span class="badge bg-success"><?= $a['status'] ?></span>
-                                                    <?= date('d F Y', strtotime($a['created_at'])) ?>
+                                                    <?= date('H:m', strtotime($a['time'])) ?>
                                                 <?php elseif ($a['status'] == 'Libur') : ?>
                                                     -
                                                 <?php elseif ($a['status'] == 'Belum Terlaksana') : ?>
