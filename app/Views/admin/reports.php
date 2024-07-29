@@ -128,14 +128,14 @@
                                                     <span class="badge bg-danger"><?= $a['status'] ?></span>
                                                 <?php elseif ($a['status'] == 'Hadir') : ?>
                                                     <span class="badge bg-success"><?= $a['status'] ?></span>
-                                                    <?= date('H:m', strtotime($a['time'])) ?>
+                                                    <?= date('H:i', strtotime($a['time'])) ?>
                                                 <?php elseif ($a['status'] == 'Libur') : ?>
                                                     -
                                                 <?php elseif ($a['status'] == 'Belum Terlaksana') : ?>
                                                     -
                                                 <?php elseif ($a['status'] == 'Izin') : ?>
                                                     <span class="badge bg-warning"><?= $a['status'] ?></span>
-                                                    <?= date('H:m', strtotime($a['time'])) ?>
+                                                    <?= date('H:i', strtotime($a['time'])) ?>
                                                 <?php endif ?>
                                             </td>
                                         <?php endforeach ?>
