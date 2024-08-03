@@ -258,7 +258,7 @@ class Admin extends BaseController
                     // $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
                     $worksheet->setCellValue($cell, '-');
                 } else if ($status == 'Hadir') {
-                    $worksheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$day]['time'])));
+                    $worksheet->setCellValue($cell, date('H:i', strtotime($s[$i]['attedance'][$day]['time'])));
                     // green, text white
                     $worksheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
                     $worksheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
@@ -372,7 +372,7 @@ class Admin extends BaseController
                     if ($status == 'Alpa') {
                         $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFFF0000');
                     } else if ($status == 'Hadir') {
-                        $newSheet->setCellValue($cell, date('H:m', strtotime($s[$i]['attedance'][$d]['time'])));
+                        $newSheet->setCellValue($cell, date('H:i', strtotime($s[$i]['attedance'][$d]['time'])));
                         $newSheet->getStyle($cell)->getFill()->setFillType('solid')->getStartColor()->setRGB('00FF00');
                         $newSheet->getStyle($cell)->getFont()->setColor(new Color(Color::COLOR_BLACK));
                         $newSheet->getColumnDimension($this->char[$day + 2])->setAutoSize(true);
