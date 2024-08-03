@@ -18,7 +18,7 @@ $path = str_replace('index.php/', '', $path);
             </a>
             <a class="nav-link collapsed <?= $path == '/attendance' ? 'active' : '' ?>" href="<?= base_url('attendance') ?>" aria-expanded="false" aria-controls="attedance">
                 <div class="nav-link-icon"><i data-feather="bell"></i></div>
-                Attendance
+                Kehadiran
             </a>
         </div>
     </div>

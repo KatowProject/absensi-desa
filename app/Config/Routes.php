@@ -20,6 +20,9 @@ $routes->group('', ['filter' => 'auth'],  function ($routes) {
     $routes->get('absensi', 'Main::absensi');
     $routes->get('attendance', 'Main::attedance');
     $routes->post('attendance', 'Main::submit_attedance');
+
+    $routes->get('account', 'Main::account');
+    $routes->post('account', 'Main::update_account');
 });
 
 /**

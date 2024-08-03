@@ -35,6 +35,8 @@ class Auth extends BaseController
         session()->set('id', $user['id']);
         session()->set('role_id', $user['role_id']);
         session()->set('name', $user['name']);
+        session()->set('email', $user['email']);
+        session()->set('jenis_kelamin', $user['jenis_kelamin']);
 
         return redirect()->to($redirect);
     }

@@ -20,6 +20,54 @@ class Main extends BaseController
         return view('main/home');
     }
 
+    public function account()
+    {
+        $m_user = new User();
+
+        $id = session()->get('id');
+
+        $user = $m_user->where('id', $id)->first();
+        if (!$user) return redirect()->to('/login')->with('error', 'User not found');
+
+        return view('main/account', [
+            'user' => $user,
+        ]);
+    }
+
+    public function update_account()
+    {
+        $m_user = new User();
+
+        $id = session()->get('id');
+
+        $user = $m_user->where('id', $id)->first();
+        if (!$user) return redirect()->to('/login')->with('error', 'User not found');
+
+        $name = $this->request->getPost('name');
+        $email = $this->request->getPost('email');
+        $jenis_kelamin = $this->request->getPost('jenis_kelamin');
+        $password = $this->request->getPost('password') ?? '';
+
+        $data = [
+            'name' => $name,
+            'email' => $email,
+            'jenis_kelamin' => $jenis_kelamin,
+        ];
+
+        if ($password) {
+            $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+
+        $m_user->update($id, $data);
+
+        // update on session
+        session()->set('name', $name);
+        session()->set('jenis_kelamin', $jenis_kelamin);
+        session()->set('email', $email);
+
+        return redirect()->to('/account')->with('success', 'Data berhasil diubah');
+    }
+
     public function absensi()
     {
         $m_user = new User();
