@@ -30,6 +30,10 @@
     <div class="container-fluid px-4">
         <div class="card">
             <div class="card-body">
+                <div class="mb-3">
+                    <button id="export-button" class="btn btn-success">Export to XLSX</button>
+                </div>
+
                 <table id="data">
                     <thead>
                         <tr>
@@ -106,10 +110,41 @@
 
 <?= $this->section('script') ?>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        new simpleDatatables.DataTable('#data');
+        const dataTable = new simpleDatatables.DataTable('#data');
+        window.dataTable = dataTable;
+
+        document.getElementById('export-button').addEventListener('click', function() {
+            const data = [];
+            const headers = [];
+            const table = document.querySelector('#data');
+
+            // Get headers
+            table.querySelectorAll('thead th').forEach(th => {
+                headers.push(th.textContent.trim());
+            });
+            data.push(headers);
+
+            // Get rows
+            dataTable.data.data.forEach(row => {
+                const rowData = [];
+                row.forEach(cell => {
+                    rowData.push(cell.text);
+                });
+
+                data.push(rowData);
+            });
+
+            // Create a new workbook and add the data
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+            // Export the workbook
+            XLSX.writeFile(wb, 'data.xlsx');
+        });
     });
 
     $('#data')

@@ -57,7 +57,7 @@ class User extends Model
             ->select('user.id, user.role_id, user.name, user.email, user.jenis_kelamin, role.name as role, jabatan.name as jabatan')
             ->join('role', 'role.id = user.role_id')
             ->join('jabatan', 'jabatan.id = user.jabatan_id')
-            ->orderBy('user.id', 'DESC')
+            ->orderBy('jabatan.id', 'ASC')
             ->findAll();
     }
 
